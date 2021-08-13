@@ -1,34 +1,28 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/robfig/cron/v3"
 )
 
-type BasicResp struct {
-	Msg  string
-	Data interface{}
-}
-
-func hello(w http.ResponseWriter, req *http.Request) {
-
-	data := BasicResp{
-		Msg:  "Hello World",
-		Data: []int{1, 2, 3},
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(data)
+func testCron() {
+	log.Println("i am a cron")
 }
 
 func main() {
 
 	http.HandleFunc("/hello", hello)
+	http.HandleFunc("/trigger", triggerCrawl)
 
-	fmt.Printf("Starting server at port 6001\n")
-	if err := http.ListenAndServe("127.0.0.1:6001", nil); err != nil {
+	cr := cron.New()
+	cr.AddFunc("@daily", CrawlByCategory)
+	cr.Start()
+
+	fmt.Printf("Starting server at port 6001, up and running\n")
+	if err := http.ListenAndServe(":6001", nil); err != nil {
 		log.Fatal(err)
 	}
 

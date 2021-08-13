@@ -3,27 +3,30 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
+	"log"
 	"os"
+	"strings"
 	"time"
 )
 
 var (
-	col          = [][]string{{"item_id", "shop_id", "cat_id", "price", "sold"}}
+	col          = [][]string{{"item_id", "shop_id", "cat_id", "price", "sold", "date", "name"}}
 	ip           = "dummy"
 	defaultLimit = 60
 	defaultPage  = 5
+	loc, _       = time.LoadLocation("Asia/Jakarta")
 )
 
 func CrawlByCategory() {
 	var (
-		// ip := getIP()
+		ip                = strings.Replace(getIP(), ".", "-", -1)
 		whitelistedLv1IDs = []int{100017, 100630, 100010}
 		catIDs            []int
 		start             = time.Now()
 	)
 
 	catIDs = prepareCategory(whitelistedLv1IDs)
-	fmt.Println("prepare crawl for", len(catIDs))
+	log.Println("prepare crawl for", len(catIDs))
 
 	var numJobs = len(catIDs)
 	jobs := make(chan int, numJobs)
@@ -41,10 +44,10 @@ func CrawlByCategory() {
 	for a := 1; a <= numJobs; a++ {
 		r := <-results
 		fmt.Println(r.MatchID, r.Dur, len(r.Result), r.Err)
-		writeCSV(fmt.Sprintf("%v-%v-data", ip, r.MatchID), r.Result, col)
+		writeCSV(fmt.Sprintf("%v-%v-%v-data", ip, time.Now().In(loc).Format("2006-01-02"), r.MatchID), r.Result, col)
 	}
 
-	fmt.Println(time.Since(start).String())
+	log.Println(time.Since(start).String())
 }
 
 func prepareCategory(whitelistedLv1IDs []int) (catIDs []int) {
@@ -59,7 +62,7 @@ func prepareCategory(whitelistedLv1IDs []int) (catIDs []int) {
 
 	cats, err := doGetCategories()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	for _, lv1 := range cats {
@@ -113,15 +116,18 @@ func formatCSV(pr ItemBasicNecessary) (prs []string) {
 		fmt.Sprintf("%v", pr.Catid),
 		fmt.Sprintf("%v", pr.Price),
 		fmt.Sprintf("%v", pr.HistoricalSold),
-		// fmt.Sprintf("%v", pr.Name),
+		fmt.Sprintf("%v", time.Now().In(loc).Format("2006-01-02 15:04:05")),
+		fmt.Sprintf("%v", pr.Name),
 	}
 	return
 }
 
 func writeCSV(fileName string, data [][]string, column [][]string) (err error) {
 
-	file, err := os.OpenFile("result/"+fileName+".csv", os.O_CREATE|os.O_WRONLY, 0777)
+	// dir := os.Getenv("work_dir")
+	file, err := os.OpenFile(""+fileName+".csv", os.O_CREATE|os.O_WRONLY, 0777)
 	if err != nil {
+		log.Panicln(err)
 		os.Exit(1)
 	}
 

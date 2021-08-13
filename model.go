@@ -14,3 +14,9 @@ type workerDoCrawlReturn struct {
 	Dur     string
 	Err     error
 }
+
+type BasicResp struct {
+	Msg     string
+	Data    interface{}
+	Latency string
+}
