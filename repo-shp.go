@@ -87,3 +87,26 @@ func fixProduct(pr ItemBasicNecessary) (fixed ItemBasicNecessary) {
 	fixed.Price = pr.Price / 100000
 	return
 }
+
+func hitDetailAPI(itemID, shopID string) (resp Detail, err error) {
+	url := "https://shopee.co.id/api/v2/item/get?itemid=" + itemID + "&shopid=" + shopID
+	par := "itemid=" + itemID + "&shopid=" + shopID
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		log.Println(err)
+	}
+
+	req = addReqHeader(req, generateIfNoneMatch(par))
+	client := &http.Client{}
+
+	res, err := client.Do(req)
+	err = json.NewDecoder(res.Body).Decode(&resp)
+	if err != nil {
+		log.Println(err)
+	}
+
+	defer res.Body.Close()
+
+	return
+}

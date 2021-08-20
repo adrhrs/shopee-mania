@@ -24,6 +24,37 @@ type ItemBasicNecessary struct {
 	IsOfficialShop      bool   `json:"is_official_shop"`
 }
 
+type SimpleProduct struct {
+	Itemid         string `json:"itemid"`
+	Shopid         string `json:"shopid"`
+	Catid          string `json:"catid"`
+	Name           string `json:"name"`
+	Price          string `json:"price"`
+	HistoricalSold string `json:"historical_sold"`
+}
+
+type FetchProductResponse struct {
+	Total   int             `json:"total"`
+	Product []CastedProduct `json:"products"`
+	Dates   []string        `json:"dates"`
+}
+
+type CastedProduct struct {
+	Itemid int64   `json:"item_id"`
+	Shopid int64   `json:"shop_id"`
+	Catid  int64   `json:"cat_id"`
+	Name   string  `json:"name"`
+	Prices []int64 `json:"prices"`
+	Solds  []int64 `json:"solds"`
+
+	Avail     int64 `json:"availibility"`
+	MinSold   int64 `json:"min_sold"`
+	MaxSold   int64 `json:"max_sold"`
+	DeltaSold int64 `json:"delta_sold"`
+	AvgPrice  int64 `json:"avg_price"`
+	EstGMV    int64 `json:"est_gmv"`
+}
+
 type Rating struct {
 	RatingStar        float64 `json:"rating_star"`
 	RatingCount       []int   `json:"rating_count"`
@@ -171,4 +202,48 @@ type CatResp []struct {
 			Catid              int         `json:"catid"`
 		} `json:"sub_sub"`
 	} `json:"sub"`
+}
+type ItemDetail struct {
+	Itemid           int64  `json:"itemid"`
+	Name             string `json:"name"`
+	Brand            string `json:"brand"`
+	ItemStatus       string `json:"item_status"`
+	IsSlashPriceItem bool   `json:"is_slash_price_item"`
+	Condition        int    `json:"condition"`
+	Categories       []struct {
+		DisplayName string `json:"display_name"`
+		Catid       int    `json:"catid"`
+	} `json:"categories"`
+	Images                 []string `json:"images"`
+	Description            string   `json:"description"`
+	NormalStock            int      `json:"normal_stock"`
+	Stock                  int      `json:"stock"`
+	Price                  float64  `json:"price"`
+	PriceMinBeforeDiscount float64  `json:"price_min_before_discount"`
+	PriceBeforeDiscount    float64  `json:"price_before_discount"`
+	PriceMax               float64  `json:"price_max"`
+	PriceMin               float64  `json:"price_min"`
+	Discount               string   `json:"discount"`
+	RawDiscount            int      `json:"raw_discount"`
+	HistoricalSold         int      `json:"historical_sold"`
+	Sold                   int      `json:"sold"`
+	ItemRating             struct {
+		RatingStar        float64 `json:"rating_star"`
+		RatingCount       []int   `json:"rating_count"`
+		RcountWithImage   int     `json:"rcount_with_image"`
+		RcountWithContext int     `json:"rcount_with_context"`
+	} `json:"item_rating"`
+	LikedCount     int    `json:"liked_count"`
+	CmtCount       int    `json:"cmt_count"`
+	ViewCount      int    `json:"view_count"`
+	Shopid         int    `json:"shopid"`
+	IsOfficialShop bool   `json:"is_official_shop"`
+	ShopLocation   string `json:"shop_location"`
+}
+type Detail struct {
+	Item     ItemDetail  `json:"item"`
+	Version  string      `json:"version"`
+	Data     interface{} `json:"data"`
+	ErrorMsg interface{} `json:"error_msg"`
+	Error    interface{} `json:"error"`
 }

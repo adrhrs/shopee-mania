@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Example</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <link href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.10.25/css/dataTables.bulma.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.1/css/bulma.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+
+<body>
+
+    <main>
+        <div class="container-fluid p-5  ">
+            <header class="pb-3 mb-4 border-bottom">
+                <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
+                    <span class="fs-4">Shopee GMV Tracker</span>
+                </a>
+            </header>
+
+            <div class="row pb-5">
+                <div class="col-lg-7">
+                    <p id="cat_label" class="h4"></p>
+                </div>
+                <div class="col-lg-3">
+                    <select class="form-control input-sm" id="cats"></select>
+                </div>
+                <div class="col-lg-1 ">
+                    <button style="width: 100%;" onclick="refresh()" id="refresh" class="btn  btn-primary">Refresh</button>
+                </div>
+                <div class="col-lg-1 ">
+                    <button style="width: 100%;" onclick="download()" id="refresh" class="btn  btn-success">
+                        <i class="fa fa-download"></i> &nbsp; CSV</button>
+                </div>
+            </div>
+
+            <div class="p-5 mb-4 bg-light rounded-3">
+                <table class="table  table-hover" id="example">
+                </table>
+            </div>
+
+            <footer class="pt-3 mt-4 text-muted border-top">
+                &copy Adrian 2021
+            </footer>
+        </div>
+    </main>
+
+</body>
+
+
+
+</html>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js" integrity="sha384-eMNCOe7tC1doHpGoWe/6oMVemdAVTMs2xqW4mwXrXsW0L84Iytr2wi5v2QjrP/xp" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js" integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFf19TOAs2zVinnD/C7E91j9yyk5//jjpt/" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/dataTables.bulma.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<script type="text/javascript" language="javascript">
+    $(document).ready(init())
+
+    function init() {
+        var defaultCatID = 100630
+        getData(defaultCatID)
+        prepareCategory()
+    }
+
+    function prepareCategory() {
+        let backendHost = "http://188.166.252.251:6001"
+        $.ajax({
+            'url': backendHost + "/getCategory",
+            'method': "GET",
+            'contentType': 'application/json'
+        }).done(function(data) {
+            cats = data.Data
+            var str = ""
+            for (var item of cats) {
+                let opt = `<option value="${item.cat_id}">${item.cat_id} - ${item.label}</option>`
+                str += opt
+            }
+            document.getElementById("cats").innerHTML = str;
+        })
+
+
+    }
+
+    function formatNumber(bilangan) {
+        var number_string = bilangan.toString(),
+            sisa = number_string.length % 3,
+            rupiah = number_string.substr(0, sisa),
+            ribuan = number_string.substr(sisa).match(/\d{3}/g);
+
+        if (ribuan) {
+            separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+            rupiah = "Rp" + rupiah
+        }
+
+        if (bilangan < 0) {
+            rupiah = -1
+        }
+        return rupiah
+    }
+
+    function getData(catID) {
+        let backendHost = "http://188.166.252.251:6001"
+        Swal.fire({
+            title: 'Please Wait',
+            text: 'fetching aggregated data...',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            icon: 'info',
+        })
+        $.ajax({
+            'url': backendHost + "/fetch?catid=" + catID,
+            'method': "GET",
+            'contentType': 'application/json'
+        }).done(function(data) {
+            Swal.close()
+            col = [{
+                className: 'details-control',
+                orderable: false,
+                data: null,
+                defaultContent: '▼'
+            }, {
+                title: "Item ID",
+                data: "item_id"
+            }, {
+                title: "Shop ID",
+                data: "shop_id"
+            }, {
+                title: "Name",
+                data: "name"
+            }, {
+                title: "#",
+                data: "availibility"
+            }, {
+                title: "Min Sold",
+                data: "min_sold"
+            }, {
+                title: "Max Sold",
+                data: "max_sold"
+            }, {
+                title: "Delta Sold",
+                data: "delta_sold"
+            }, {
+                title: "Avg Price",
+                data: "avg_price",
+                render: $.fn.dataTable.render.number('.', '.', 0, 'Rp')
+            }, {
+                title: "Est. GMV",
+                data: "est_gmv",
+                render: $.fn.dataTable.render.number('.', '.', 0, 'Rp')
+
+            }]
+
+            var table = $('#example').DataTable({
+                destroy: true,
+                aaData: data.Data.products,
+                columns: col,
+                order: [
+                    [9, "desc"]
+                ]
+            })
+
+            $('#example tbody').on('click', 'td.details-control', function() {
+                var tr = $(this).closest('tr');
+                var row = table.row(tr);
+                if (row.data() !== undefined) {
+                    if (row.child.isShown()) {
+                        row.child.hide();
+                        tr.removeClass('shown');
+                    } else {
+                        getDetail(row, row.data(), data.Data.dates)
+                        tr.addClass('shown');
+                    }
+                }
+            });
+
+        })
+
+
+
+    }
+
+    function getDetail(row, dataRow, dates) {
+        let backendHost = "http://188.166.252.251:6001"
+        Swal.fire({
+            title: 'Please Wait',
+            text: 'fetching product details...',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            icon: 'info',
+        })
+        $.ajax({
+            'url': backendHost + `/detail?itemid=${dataRow.item_id}&shopid=${dataRow.shop_id}`,
+            'method': "GET",
+            'contentType': 'application/json'
+        }).done(function(data) {
+            Swal.close()
+            item = data.Data.item
+            histDet = processDetail(dataRow, dates, item)
+            row.child(histDet).show()
+        })
+    }
+
+    function getUrl(d) {
+        nameStriped = d.name.replace(/[^\w\s]/gi, '')
+        nameStriped = nameStriped.replace(/\s+/g, ' ')
+        nameStriped = nameStriped + " i." + d.shop_id + "." + d.item_id
+        nameStriped = nameStriped.split(" ").join("-")
+        nameStriped = "https://shopee.co.id/" + nameStriped
+        return nameStriped
+    }
+
+    function processDetail(d, dates, item) {
+        containerHead = `<div class="row pt-3 pl-3"><div class="col-lg-7">`
+
+        images = ""
+        length = item.images.length
+        if (length > 8) {
+            length = 8
+        }
+        for (let index = 0; index < length; index++) {
+            imgCode = item.images[index]
+            imgURL = `https://cf.shopee.co.id/file/${imgCode}_tn`
+            imgTag = `<img style="border: 2px solid #666666;" width="10%" width="auto"  class="img img-responsive" src=${imgURL}> &nbsp;&nbsp;`
+            images += imgTag
+
+        }
+
+        infoSection = `
+            <div class="pb-3">${images}</div>
+            <b class="pb-3">${d.name}</b>
+            <p class="text-muted">${item.description.substring(0, 300)}...</p>
+            <br>
+            <small>
+                <i class="fa fa-map-marker"></i> &nbsp;${item.shop_location} &nbsp;&nbsp;
+                <i style="color:green" class="fa fa-eye"></i> &nbsp;${item.view_count} &nbsp;&nbsp;
+                <i style="color:orange" class="fa fa-star"></i> &nbsp;${item.item_rating.rating_count[0]} &nbsp;&nbsp;
+                <i style="color:red" class="fa fa-heart"></i> &nbsp;${item.liked_count} &nbsp;&nbsp;
+                <i style="color:blue" class="fa fa-dropbox"></i> &nbsp;${item.stock} &nbsp;&nbsp;
+            </small>
+            
+            <a style="float: right" href="${getUrl(d)}" target="_blank" class="btn btn-sm btn-outline-dark">
+                <i  class="fa fa-search"></i>
+            </a>
+        `
+        divTableHead = `
+            </div>
+            <div class="col-lg-4">
+                <table style="float: right" class="table table-sm table-bordered">
+                    <thead>
+                        <th></th>
+                        <th>Date</th>
+                        <th>Price</th>
+                        <th>Sold</th>
+                        <th>△ Sold</th>
+                    </thead>
+                    <tbody>
+        `
+        contents = ''
+        prevSold = -1
+        deltaSold = 'N/A'
+
+        if (d.hasOwnProperty('prices')) {
+            for (let index = 0; index < d.prices.length; index++) {
+                price = d.prices[index]
+                sold = d.solds[index]
+                date = dates[index]
+
+                if (sold > 0) {
+                    if (index > 0 && prevSold > 0) {
+                        deltaSold = sold - prevSold
+                    }
+                    prevSold = d.solds[index]
+                } else {
+                    deltaSold = 'N/A'
+                }
+                let tableHtml = `
+                <tr>
+                    <th>${index+1}</th>
+                    <td>${date}</td>
+                    <td>${formatNumber(price)}</td>
+                    <td>${sold}</td>
+                    <td>${deltaSold}</td>
+                </tr>
+            `
+                contents = contents + tableHtml
+            }
+        }
+
+        containerEnd = ' </tbody> </table></div> </div>'
+        return containerHead + infoSection + divTableHead + contents + containerEnd
+
+
+
+    }
+
+    function refresh() {
+        var catID = document.getElementById("cats").value;
+        var sel = document.getElementById("cats");
+        var text = sel.options[sel.selectedIndex].text;
+        document.getElementById("cat_label").innerHTML = text;
+        getData(catID)
+    }
+
+    function download() {
+        let backendHost = "http://188.166.252.251:6001"
+        file = document.getElementById("cats").value;
+        window.open(backendHost + "/download?path=aggregated-" + file + ".csv", '_blank')
+    }
+</script>

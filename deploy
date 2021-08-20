@@ -1,0 +1,20 @@
+echo "stop all container..."
+docker stop $(docker ps -a -q)
+
+echo "pull latest image..."
+docker pull adrhrs/shopee-mania
+
+echo "run temp container..."
+docker run -d adrhrs/shopee-mania
+
+echo "copy static file..."
+mkdir /var/crawl-result/static
+docker cp $(docker ps | grep 'adrhrs/shopee-mania' | awk '{ print $1 }'):/go/src/shopee-mania/static/index.html /var/crawl-result/static
+
+echo "stop all container..."
+docker stop $(docker ps -a -q)
+
+echo "start actual container..."
+docker run -d -v /var/crawl-result:/go/src/shopee-mania -p 6001:6001 adrhrs/shopee-mania
+
+echo "finish deployment"
