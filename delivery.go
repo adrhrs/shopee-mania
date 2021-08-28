@@ -70,7 +70,7 @@ func getResult(w http.ResponseWriter, req *http.Request) {
 func aggResult(w http.ResponseWriter, req *http.Request) {
 	t := time.Now()
 
-	result := AggResult()
+	_, result := AggResult()
 
 	data := BasicResp{
 		Msg:     "Aggregated",
@@ -82,11 +82,6 @@ func aggResult(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(data)
-}
-
-func crawlWrapper() {
-	CrawlByCategory()
-	AggResult()
 }
 
 func fetchResult(w http.ResponseWriter, req *http.Request) {
@@ -177,6 +172,54 @@ func handleDetail(w http.ResponseWriter, req *http.Request) {
 	}
 
 	log.Println(msg)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	json.NewEncoder(w).Encode(data)
+}
+
+func handleEvaluateBuyer(w http.ResponseWriter, req *http.Request) {
+	t := time.Now()
+
+	code := http.StatusOK
+	itemID := req.FormValue("itemid")
+	shopID := req.FormValue("shopid")
+	msg := "fetch buyer " + itemID + " " + shopID
+
+	go EvaluateBuyer(itemID, shopID)
+
+	data := BasicResp{
+		Msg:     msg,
+		Latency: time.Since(t).String(),
+		Data:    "async",
+	}
+
+	log.Println(msg)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	json.NewEncoder(w).Encode(data)
+}
+
+func checkClientIP(w http.ResponseWriter, httpServer *http.Request) {
+	t := time.Now()
+	code := http.StatusOK
+
+	var userIP string
+	if len(httpServer.Header.Get("CF-Connecting-IP")) > 1 {
+		userIP = httpServer.Header.Get("CF-Connecting-IP")
+	} else if len(httpServer.Header.Get("X-Forwarded-For")) > 1 {
+		userIP = httpServer.Header.Get("X-Forwarded-For")
+	} else if len(httpServer.Header.Get("X-Real-IP")) > 1 {
+		userIP = httpServer.Header.Get("X-Real-IP")
+	} else {
+		userIP = httpServer.RemoteAddr
+	}
+	data := BasicResp{
+		Msg:     "check IP",
+		Latency: time.Since(t).String(),
+		Data:    userIP,
+	}
+
+	log.Println("got requet", userIP)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	json.NewEncoder(w).Encode(data)

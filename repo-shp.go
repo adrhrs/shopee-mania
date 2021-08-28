@@ -110,3 +110,56 @@ func hitDetailAPI(itemID, shopID string) (resp Detail, err error) {
 
 	return
 }
+
+func hitRating(itemID, shopID, typeRating, offset string) (resp RatingResponse, err error) {
+	url := "https://shopee.co.id/api/v2/item/get_ratings?filter=0&flag=1&limit=6&offset=" + offset + "&type=" + typeRating + "&itemid=" + itemID + "&shopid=" + shopID
+	par := "itemid=" + itemID + "&shopid=" + shopID + "&offset=" + offset + "&filter=0&flag=1&limit=6" + "&type=" + typeRating
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		log.Println(err)
+	}
+
+	req = addReqHeader(req, generateIfNoneMatch(par))
+	client := &http.Client{}
+
+	res, err := client.Do(req)
+	err = json.NewDecoder(res.Body).Decode(&resp)
+	if err != nil {
+		log.Println(err)
+	}
+
+	defer res.Body.Close()
+
+	return
+}
+
+func hitShopInfo(shopID, username string, isAnonymous bool) (resp ShopInfo, err error) {
+	var url, par string
+
+	if isAnonymous {
+		url = "https://shopee.co.id/api/v4/shop/get_shop_detail?shopid=" + shopID
+		par = "shopid=" + shopID
+	} else {
+		url = "https://shopee.co.id/api/v4/shop/get_shop_detail?username=" + username
+		par = "username=" + username
+	}
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		log.Println(err)
+	}
+
+	req = addReqHeader(req, generateIfNoneMatch(par))
+	client := &http.Client{}
+
+	res, err := client.Do(req)
+	err = json.NewDecoder(res.Body).Decode(&resp)
+	if err != nil {
+		log.Println(err)
+	}
+
+	defer res.Body.Close()
+
+	return
+}

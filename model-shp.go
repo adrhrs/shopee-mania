@@ -247,3 +247,86 @@ type Detail struct {
 	ErrorMsg interface{} `json:"error_msg"`
 	Error    interface{} `json:"error"`
 }
+
+type RatingResponse struct {
+	Data struct {
+		Ratings           []RatingDetail `json:"ratings"`
+		ItemRatingSummary struct {
+			RatingTotal       int   `json:"rating_total"`
+			RatingCount       []int `json:"rating_count"`
+			RcountWithContext int   `json:"rcount_with_context"`
+			RcountWithImage   int   `json:"rcount_with_image"`
+			RcountWithMedia   int   `json:"rcount_with_media"`
+			RcountLocalReview int   `json:"rcount_local_review"`
+		} `json:"item_rating_summary"`
+	} `json:"data"`
+	Error    int         `json:"error"`
+	ErrorMsg interface{} `json:"error_msg"`
+}
+
+type RatingDetail struct {
+	Orderid        int64    `json:"orderid"`
+	Itemid         int64    `json:"itemid"`
+	Rating         int      `json:"rating"`
+	Userid         int      `json:"userid"`
+	Shopid         int      `json:"shopid"`
+	Ctime          int64    `json:"ctime"`
+	Comment        string   `json:"comment"`
+	RatingStar     int      `json:"rating_star"`
+	AuthorUsername string   `json:"author_username"`
+	AuthorPortrait string   `json:"author_portrait"`
+	AuthorShopid   int      `json:"author_shopid"`
+	Anonymous      bool     `json:"anonymous"`
+	Images         []string `json:"images"`
+	ProductItems   []struct {
+		Itemid    int64  `json:"itemid"`
+		Shopid    int    `json:"shopid"`
+		Name      string `json:"name"`
+		Modelid   int64  `json:"modelid"`
+		ModelName string `json:"model_name"`
+	} `json:"product_items"`
+	LikeCount interface{} `json:"like_count"`
+}
+
+type ShopInfo struct {
+	Error    int      `json:"error"`
+	ErrorMsg string   `json:"error_msg"`
+	Data     ShopData `json:"data"`
+	Version  string   `json:"version"`
+}
+
+type ShopData struct {
+	Userid        int    `json:"userid"`
+	Shopid        int    `json:"shopid"`
+	Name          string `json:"name"`
+	ItemCount     int    `json:"item_count"`
+	FollowerCount int    `json:"follower_count"`
+	Account       struct {
+		Username       string `json:"username"`
+		FollowingCount int    `json:"following_count"`
+		Portrait       string `json:"portrait"`
+		PhoneVerified  bool   `json:"phone_verified"`
+		EmailVerified  bool   `json:"email_verified"`
+		Status         int    `json:"status"`
+	} `json:"account"`
+	Address struct {
+		ID              int    `json:"id"`
+		Userid          int    `json:"userid"`
+		Name            string `json:"name"`
+		Phone           string `json:"phone"`
+		Region          string `json:"region"`
+		State           string `json:"state"`
+		City            string `json:"city"`
+		Address         string `json:"address"`
+		Status          int    `json:"status"`
+		Ctime           int    `json:"ctime"`
+		Mtime           int    `json:"mtime"`
+		Zipcode         string `json:"zipcode"`
+		Deftime         int    `json:"deftime"`
+		FullAddress     string `json:"full_address"`
+		District        string `json:"district"`
+		Town            string `json:"town"`
+		LogisticsStatus int    `json:"logistics_status"`
+		Icno            string `json:"icno"`
+	} `json:"address"`
+}

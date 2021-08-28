@@ -22,6 +22,9 @@ func main() {
 	http.HandleFunc("/getCategory", prepCat)
 	http.HandleFunc("/download", handleDownload)
 	http.HandleFunc("/detail", handleDetail)
+	http.HandleFunc("/buyer", handleEvaluateBuyer)
+
+	http.HandleFunc("/check", checkClientIP)
 
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
