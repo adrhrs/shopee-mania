@@ -8,10 +8,6 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-func testCron() {
-	log.Println("i am a cron")
-}
-
 func main() {
 
 	http.HandleFunc("/hello", hello)
@@ -29,7 +25,7 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
 	cr := cron.New()
-	cr.AddFunc("@daily", crawlWrapper)
+	cr.AddFunc("@daily", CrawlWrapper)
 	cr.Start()
 
 	fmt.Printf("Starting server at port 6001, up and running\n")

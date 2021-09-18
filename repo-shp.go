@@ -12,21 +12,12 @@ import (
 func buildSearchURL(p SearchParam) (URL, param string) {
 
 	newest := strconv.Itoa(p.Newest)
-	// keyword := url.QueryEscape(p.Data.Keyword)
+	matchID := strconv.Itoa(p.Matchid)
+	endpoint := "https://shopee.co.id/api/v4/search/search_items?"
+	defaultScenario := "&scenario=PAGE_OTHERS"
 
-	matchID := ""
-	keywordParam := ""
-	pageTypeParam := ""
-	priceParam := ""
-	pageTypeParam = "&page_type=search&version=2"
-	sortBy := "by=sales"
-
-	matchID = strconv.Itoa(p.Matchid)
-	URL = "https://shopee.co.id/api/v4/search/search_items?" + sortBy + "&limit=60&order=desc&newest=" +
-		newest + "&match_id=" + matchID + keywordParam + priceParam + pageTypeParam + "&scenario=PAGE_OTHERS"
-
-	param = sortBy + "&limit=60&order=desc&newest=" +
-		newest + matchID + keywordParam + priceParam + pageTypeParam
+	param = fmt.Sprintf(`by=sales&limit=%v&order=desc&newest=%v&match_id=%v&page_type=%v&version=2`, p.Limit, newest, matchID, p.PageType)
+	URL = endpoint + param + defaultScenario
 
 	return
 }

@@ -15,6 +15,26 @@ const (
 	histSize = 2
 )
 
+func GetResult() (files []string) {
+
+	f, err := os.Open(".")
+	if err != nil {
+		log.Println(err)
+	}
+	fileInfo, err := f.Readdir(-1)
+	f.Close()
+	if err != nil {
+		log.Println(err)
+	}
+
+	for _, file := range fileInfo {
+		files = append(files, file.Name())
+	}
+
+	return
+
+}
+
 func FetchResult(catID string) (results FetchProductResponse, err error) {
 
 	filename := fmt.Sprintf("aggregated-%v.csv", catID)

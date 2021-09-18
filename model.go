@@ -1,11 +1,14 @@
 package main
 
 type SearchParam struct {
-	Newest   int
-	Keyword  string
-	MinPrice string
-	Matchid  int
-	SortBy   string
+	Newest    int
+	Keyword   string
+	MinPrice  string
+	Matchid   int
+	SortBy    string
+	CrawlType int
+	PageType  string
+	Limit     int
 }
 
 type workerDoCrawlReturn struct {
@@ -24,6 +27,7 @@ type BasicResp struct {
 
 type CrawlCronResult struct {
 	TotalCategories int
+	TotalShopIDs    int
 	TotalProduct    int
 	AvgProductCount int
 	CrawlDuration   string

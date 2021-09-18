@@ -21,7 +21,7 @@ func hello(w http.ResponseWriter, req *http.Request) {
 	}
 
 	data := BasicResp{
-		Msg:     "Hello World Mantul",
+		Msg:     "Hello World Production, now with shop crawl",
 		Data:    dir,
 		Latency: time.Since(t).String(),
 	}
@@ -70,15 +70,15 @@ func getResult(w http.ResponseWriter, req *http.Request) {
 func aggResult(w http.ResponseWriter, req *http.Request) {
 	t := time.Now()
 
-	_, result := AggResult()
+	result := AggResultV2()
 
 	data := BasicResp{
-		Msg:     "Aggregated",
+		Msg:     "Aggregated async",
 		Latency: time.Since(t).String(),
 		Data:    result,
 	}
 
-	log.Println("agg result")
+	log.Println("agg result v2")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(data)
