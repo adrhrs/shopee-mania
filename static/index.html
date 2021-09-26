@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Example</title>
+    <title>Shopee GMV Tracker</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
     <link href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.10.25/css/dataTables.bulma.min.css" rel="stylesheet">
@@ -79,10 +79,28 @@
         }).done(function(data) {
             cats = data.Data
             var str = ""
+
+            var shops = [{
+                cat_id: 11487927,
+                label: "P&G Official Store"
+            }, {
+                cat_id: 62582411,
+                label: "Maybelline Indonesia Official Store"
+            }, {
+                cat_id: 11487927,
+                label: "NIVEA Official Store"
+            }, ]
+
+            for (var item of shops) {
+                let opt = `<option value="${item.cat_id}">${item.cat_id} - ${item.label}</option>`
+                str += opt
+            }
+
             for (var item of cats) {
                 let opt = `<option value="${item.cat_id}">${item.cat_id} - ${item.label}</option>`
                 str += opt
             }
+
             document.getElementById("cats").innerHTML = str;
         })
 

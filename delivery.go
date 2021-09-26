@@ -21,7 +21,7 @@ func hello(w http.ResponseWriter, req *http.Request) {
 	}
 
 	data := BasicResp{
-		Msg:     "Hello World Production, now with shop crawl",
+		Msg:     "Hello World Production, now with shop crawl and shop agg ",
 		Data:    dir,
 		Latency: time.Since(t).String(),
 	}
@@ -69,18 +69,23 @@ func getResult(w http.ResponseWriter, req *http.Request) {
 
 func aggResult(w http.ResponseWriter, req *http.Request) {
 	t := time.Now()
-
-	result := AggResultV2()
+	code := http.StatusOK
+	msg := "Aggregated async"
+	typeCrawl := req.FormValue("type")
+	if typeCrawl == "" {
+		msg = "fail type"
+		code = http.StatusInternalServerError
+	}
+	go AggResultV2(typeCrawl)
 
 	data := BasicResp{
-		Msg:     "Aggregated async",
+		Msg:     msg,
 		Latency: time.Since(t).String(),
-		Data:    result,
 	}
 
 	log.Println("agg result v2")
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(code)
 	json.NewEncoder(w).Encode(data)
 }
 

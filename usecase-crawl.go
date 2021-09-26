@@ -21,6 +21,8 @@ var (
 	defaultLimitShop   = 30
 	defaultMaxPageCat  = 5
 	defaultMaxPageShop = 50
+	aggTypeCat         = "data"
+	aggTypeShop        = "shop"
 
 	shopType = 2
 	catType  = 1
@@ -29,9 +31,10 @@ var (
 func CrawlWrapper() {
 	cr := CrawlByCategory()
 	sr := CrawlByShop()
-	ar := AggResultV2()
+	ar := AggResultV2(aggTypeCat)
+	sar := AggResultV2(aggTypeShop)
 
-	content := prepContent(cr, sr, ar)
+	content := prepContent(cr, sr, ar, sar)
 	err := sendEmail(content)
 	if err == nil {
 		log.Println("email sent!")
@@ -121,7 +124,7 @@ func CrawlByShop() (result CrawlCronResult) {
 			errCount++
 		}
 		totProd += r.TotProd
-		writeCSV(fmt.Sprintf("%v-%v-%v-data", ip, time.Now().In(loc).Format("2006-01-02"), r.MatchID), r.Result, col)
+		writeCSV(fmt.Sprintf("%v-%v-%v-shop", ip, time.Now().In(loc).Format("2006-01-02"), r.MatchID), r.Result, col)
 	}
 
 	result.CrawlDuration = time.Since(start).String()
@@ -169,7 +172,6 @@ func workerDoCrawl(id int, jobs <-chan SearchParam, results chan<- workerDoCrawl
 				formattedData = append(formattedData, formatCSV(r.ItemBasic))
 				totProd++
 			}
-			fmt.Println(j.Matchid, i+1, len(resp.Items))
 			if len(resp.Items) == 0 {
 				break
 			}

@@ -14,7 +14,7 @@ import (
 )
 
 /// agg v2
-func AggResultV2() (ar AggCronResult) {
+func AggResultV2(typeCrawl string) (ar AggCronResult) {
 
 	prepareStart := time.Now()
 	f, err := os.Open(".")
@@ -30,16 +30,16 @@ func AggResultV2() (ar AggCronResult) {
 	//get available date, and map to filename
 	var (
 		uniqueDate = make(map[string]time.Time)
-		catIDs     = make(map[string]int)
+		matchIDs   = make(map[string]int)
 		dates      []time.Time
 	)
 
 	for _, file := range fileInfo {
 		fName := file.Name()
-		if strings.Contains(fName, "data") {
+		if strings.Contains(fName, typeCrawl) {
 			var (
-				fNaming         []string
-				dateKey, catKey string
+				fNaming           []string
+				dateKey, matchKey string
 			)
 			fNaming = strings.Split(fName, "-")
 			if len(fNaming) > 8 {
@@ -49,8 +49,8 @@ func AggResultV2() (ar AggCronResult) {
 				dk := getDate(t).Format("2006-01-02")
 				uniqueDate[dk] = t
 
-				catKey = fNaming[7]
-				catIDs[catKey]++
+				matchKey = fNaming[7]
+				matchIDs[matchKey]++
 
 			} else {
 				err = errors.New("file is corrupted " + fName)
@@ -85,7 +85,7 @@ func AggResultV2() (ar AggCronResult) {
 		invalidData       int
 		readDur, writeDur int64
 	)
-	for catID := range catIDs {
+	for matchID := range matchIDs {
 		var (
 			mapProd     = make(map[string]SimpleProduct)
 			mapProdDate = make(map[string]SimpleProduct)
@@ -94,7 +94,7 @@ func AggResultV2() (ar AggCronResult) {
 		readStart := time.Now()
 		for _, d := range dates {
 			dateKey := getDate(d).Format("2006-01-02")
-			filename := fmt.Sprintf("188-166-252-251-%s-%s-data.csv", dateKey, catID)
+			filename := fmt.Sprintf("188-166-252-251-%s-%s-%s.csv", dateKey, matchID, typeCrawl)
 			file, errOpen := os.Open(filename)
 			if errOpen != nil {
 				err = errOpen
@@ -110,11 +110,11 @@ func AggResultV2() (ar AggCronResult) {
 				if len(record) != 7 {
 					invalidData++
 				} else {
-					productKey := fmt.Sprintf("%v-%v", record[0], catID)
+					productKey := fmt.Sprintf("%v-%v", record[0], matchID)
 					mapProd[productKey] = SimpleProduct{
 						Itemid: record[0],
 						Shopid: record[1],
-						Catid:  catID,
+						Catid:  matchID,
 						Name:   record[6],
 					}
 					pdKey := fmt.Sprintf("%v-%v", dateKey, productKey)
@@ -176,7 +176,7 @@ func AggResultV2() (ar AggCronResult) {
 		writeDur += time.Since(writeStart).Milliseconds()
 		totProdCatDate += len(mapProdDate)
 		totProdCat += len(mapProd)
-		writeCSV("aggregated-"+catID, row, col)
+		writeCSV("aggregated-"+matchID, row, col)
 
 	}
 
@@ -186,6 +186,7 @@ func AggResultV2() (ar AggCronResult) {
 	ar.AggDuration = time.Since(prepareStart).String()
 	ar.ReadDuration = strconv.Itoa(readSec)
 	ar.CalcDuration = strconv.Itoa(writeSec)
+	ar.TotalDays = len(dates)
 
 	log.Println("dur", invalidData, totProdCatDate, ar)
 

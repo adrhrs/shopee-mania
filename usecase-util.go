@@ -115,7 +115,7 @@ func sendEmail(content string) (err error) {
 	return
 }
 
-func prepContent(cr CrawlCronResult, sr CrawlCronResult, ar AggCronResult) (content string) {
+func prepContent(cr, sr CrawlCronResult, ar, sar AggCronResult) (content string) {
 
 	dateKey := getDate(time.Now()).Format("2006-01-02")
 
@@ -186,10 +186,12 @@ func prepContent(cr CrawlCronResult, sr CrawlCronResult, ar AggCronResult) (cont
 						<h1 style="font-size:24px;margin:0 0 20px 0;font-family:Arial,sans-serif;">Shopee Crawling Report %s</h1>
 						<p style="margin:0 0 12px 0;font-size:16px;line-height:24px;font-family:Arial,sans-serif;text-align: justify;text-justify: inter-word;">
 							Crawling done for <b>%d</b> categories, in <b>%s</b>. We encounter <b>%d</b> error during crawling. We got <b>%d</b> total products for today, 
-							so we have average of <b>%v</b> products each category. Shop crawl done for <b>%d</b> shops and got <b>%d</b> products, finish in <b>%s</b>. Aggregation for <b>%d</b> days done in <b>%v</b>, including reading files in <b>%v</b> and calculating in <b>%v</b>.
+							so we have average of <b>%v</b> products each category. Shop crawl done for <b>%d</b> shops and got <b>%d</b> products, finish in <b>%s</b>. 
+							Category Aggregation for <b>%d</b> days done in <b>%v</b>, including reading files in <b>%v</b> and calculating in <b>%v</b>.
+							Shop Aggregation for <b>%d</b> days done in <b>%v</b>, including reading files in <b>%v</b> and calculating in <b>%v</b>.
 						</p>
 						
-	`, dateKey, cr.TotalCategories, cr.CrawlDuration, cr.ErrCount, cr.TotalProduct, cr.AvgProductCount, sr.TotalShopIDs, sr.TotalProduct, sr.CrawlDuration, ar.TotalDays, ar.AggDuration, ar.ReadDuration, ar.CalcDuration)
+	`, dateKey, cr.TotalCategories, cr.CrawlDuration, cr.ErrCount, cr.TotalProduct, cr.AvgProductCount, sr.TotalShopIDs, sr.TotalProduct, sr.CrawlDuration, ar.TotalDays, ar.AggDuration, ar.ReadDuration, ar.CalcDuration, sar.TotalDays, sar.AggDuration, sar.ReadDuration, sar.CalcDuration)
 
 	content = head + body + tail
 	return
