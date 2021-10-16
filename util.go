@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"time"
 )
 
 func generateIfNoneMatch(path string) (ifnonematch string) {
@@ -57,4 +59,30 @@ func getIP() string {
 	json.Unmarshal(body, &ip)
 
 	return ip.Query
+}
+
+func checkClientIP(w http.ResponseWriter, httpServer *http.Request) {
+	t := time.Now()
+	code := http.StatusOK
+
+	var userIP string
+	if len(httpServer.Header.Get("CF-Connecting-IP")) > 1 {
+		userIP = httpServer.Header.Get("CF-Connecting-IP")
+	} else if len(httpServer.Header.Get("X-Forwarded-For")) > 1 {
+		userIP = httpServer.Header.Get("X-Forwarded-For")
+	} else if len(httpServer.Header.Get("X-Real-IP")) > 1 {
+		userIP = httpServer.Header.Get("X-Real-IP")
+	} else {
+		userIP = httpServer.RemoteAddr
+	}
+	data := BasicResp{
+		Msg:     "check IP",
+		Latency: time.Since(t).String(),
+		Data:    userIP,
+	}
+
+	log.Println("got requet", userIP)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	json.NewEncoder(w).Encode(data)
 }

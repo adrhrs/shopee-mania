@@ -1,9 +1,13 @@
 package main
 
 import (
+	"encoding/csv"
 	"fmt"
+	"io"
 	"log"
+	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -100,4 +104,48 @@ func workerGetUser(id int, jobs <-chan RatingDetail, results chan<- GetUserWorke
 			ShopData:     userData.Data,
 		}
 	}
+}
+
+func EvaluateProductReviewer() (err error) {
+
+	t := time.Now()
+	f, err := os.Open(".")
+	if err != nil {
+		log.Println(err)
+	}
+	fileInfo, err := f.Readdir(-1)
+	f.Close()
+	if err != nil {
+		log.Println(err)
+	}
+
+	files := []string{}
+	for _, file := range fileInfo {
+		fName := file.Name()
+		if strings.Contains(fName, "aggregated") {
+			files = append(files, fName)
+		}
+	}
+
+	uniqueProduct := make(map[string]string) //product_id:shop_id
+
+	for _, filename := range files {
+		file, errOpenFile := os.Open(filename)
+		if errOpenFile != nil {
+			return
+		}
+		r := csv.NewReader(file)
+		for i := 0; ; i++ {
+			record, err := r.Read()
+			if err == io.EOF {
+				break
+			}
+			uniqueProduct[record[0]] = record[1]
+		}
+		file.Close()
+	}
+
+	log.Println("populated unique product", len(uniqueProduct), time.Since(t).String())
+
+	return
 }
