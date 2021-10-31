@@ -260,7 +260,7 @@ type RatingResponse struct {
 			RcountLocalReview int   `json:"rcount_local_review"`
 		} `json:"item_rating_summary"`
 	} `json:"data"`
-	Error    int         `json:"error"`
+	Error    interface{} `json:"error"`
 	ErrorMsg interface{} `json:"error_msg"`
 }
 

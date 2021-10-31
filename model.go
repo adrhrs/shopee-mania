@@ -62,3 +62,17 @@ type UserDetail struct {
 	Portrait      string `json:"portrait"`
 	PhoneVerified bool   `json:"phone_verified"`
 }
+
+type GetReviews struct {
+	ProductID string
+	ShopID    string
+
+	Review  []RatingDetail
+	Latency string
+	Err     error
+}
+
+type GetUserWorkerReturn struct {
+	RatingDetail RatingDetail
+	ShopData     ShopData
+}

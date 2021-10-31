@@ -10,9 +10,6 @@ import (
 
 func main() {
 
-	EvaluateProductReviewer()
-	return
-
 	http.HandleFunc("/hello", hello)
 	http.HandleFunc("/trigger", triggerCrawl)
 	http.HandleFunc("/result", getResult)
