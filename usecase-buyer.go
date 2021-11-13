@@ -103,23 +103,6 @@ func workerGetUser(id int, jobs <-chan RatingDetail, results chan<- GetUserWorke
 
 /// v2
 
-func workerGetReviews(id int, jobs <-chan GetReviews, results chan<- GetReviews) {
-	for j := range jobs {
-		t := time.Now()
-		for i := 0; i < 10; i++ {
-			offsetStr := strconv.Itoa(i * 6)
-			reviews, err := hitRating(j.ProductID, j.ShopID, "0", offsetStr)
-			j.Review = append(j.Review, reviews.Data.Ratings...)
-			j.Err = err
-			if len(reviews.Data.Ratings) < 6 {
-				break
-			}
-		}
-		j.Latency = time.Since(t).String()
-		results <- j
-	}
-}
-
 // 729373 5175509
 
 func EvaluateProductReviewer() (err error) {
@@ -251,4 +234,52 @@ func populateUniqueProduct() (uniqueProduct map[string]string, err error) {
 	}
 
 	return
+}
+
+func workerGetReviews(id int, jobs <-chan GetReviews, results chan<- GetReviews) {
+	for j := range jobs {
+		t := time.Now()
+		for i := 0; i < 10; i++ {
+			offsetStr := strconv.Itoa(i * 6)
+			reviews, err := hitRating(j.ProductID, j.ShopID, "0", offsetStr)
+			j.Review = append(j.Review, reviews.Data.Ratings...)
+			j.Err = err
+			if len(reviews.Data.Ratings) < 6 {
+				break
+			}
+		}
+		j.Latency = time.Since(t).String()
+		results <- j
+	}
+}
+
+func readReviewData() {
+	filename := "reviewer-data.csv"
+	file, errOpenFile := os.Open(filename)
+	if errOpenFile != nil {
+		return
+	}
+	uniquerBuyer := make(map[string]int)
+	r := csv.NewReader(file)
+	for i := 0; ; i++ {
+		record, err := r.Read()
+		if err == io.EOF {
+			break
+		}
+		uniquerBuyer[record[0]]++
+
+	}
+	file.Close()
+	fmt.Println(len(uniquerBuyer))
+
+	mostReview := 0
+	mostReviewer := ""
+	for k, v := range uniquerBuyer {
+		if v >= mostReview && k != "0" {
+			mostReview = v
+			mostReviewer = k
+		}
+	}
+	fmt.Println(mostReviewer, mostReview)
+
 }
