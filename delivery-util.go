@@ -37,7 +37,7 @@ func hello(w http.ResponseWriter, req *http.Request) {
 	}
 
 	data := BasicResp{
-		Msg:     "Hello World Production, new build write review ",
+		Msg:     "Hello World Production, new build v4 detail ",
 		Data:    dir,
 		Latency: time.Since(t).String(),
 	}

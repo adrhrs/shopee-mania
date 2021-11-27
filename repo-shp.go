@@ -79,8 +79,8 @@ func fixProduct(pr ItemBasicNecessary) (fixed ItemBasicNecessary) {
 	return
 }
 
-func hitDetailAPI(itemID, shopID string) (resp Detail, err error) {
-	url := "https://shopee.co.id/api/v2/item/get?itemid=" + itemID + "&shopid=" + shopID
+func hitDetailAPI(itemID, shopID string) (resp RespDetailV4, err error) {
+	url := "https://shopee.co.id/api/v4/item/get?itemid=" + itemID + "&shopid=" + shopID
 	par := "itemid=" + itemID + "&shopid=" + shopID
 
 	req, err := http.NewRequest("GET", url, nil)

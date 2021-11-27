@@ -7,42 +7,26 @@ import (
 	"time"
 )
 
-func handleEvaluateBuyer(w http.ResponseWriter, req *http.Request) {
+func handleTrackProduct(w http.ResponseWriter, req *http.Request) {
 	t := time.Now()
-
 	code := http.StatusOK
+	msg := "Success Track Buyer Product"
+
 	itemID := req.FormValue("itemid")
 	shopID := req.FormValue("shopid")
-	msg := "fetch buyer " + itemID + " " + shopID
-
-	go EvaluateBuyer(itemID, shopID)
+	_, _, dataBuyer, err := TrackProduct(itemID, shopID)
+	if err != nil {
+		msg = err.Error()
+		code = http.StatusInternalServerError
+	}
 
 	data := BasicResp{
 		Msg:     msg,
 		Latency: time.Since(t).String(),
-		Data:    "async",
+		Data:    dataBuyer,
 	}
 
-	log.Println(msg)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(code)
-	json.NewEncoder(w).Encode(data)
-}
-
-func handleEvaluateReviewer(w http.ResponseWriter, req *http.Request) {
-	t := time.Now()
-
-	code := http.StatusOK
-
-	go EvaluateProductReviewer()
-
-	data := BasicResp{
-		Msg:     "will evaluate all agg files",
-		Latency: time.Since(t).String(),
-		Data:    "async",
-	}
-
-	log.Println("evaluate agg files triggered")
+	log.Println("got track product buyer request")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	json.NewEncoder(w).Encode(data)

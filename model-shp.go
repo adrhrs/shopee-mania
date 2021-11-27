@@ -1,5 +1,6 @@
 package main
 
+//search API
 type ShpResV2 struct {
 	TotalCount int `json:"total_count"`
 	Items      []struct {
@@ -174,6 +175,10 @@ type ItemBasicAll struct {
 	PackSize                          interface{} `json:"pack_size"`
 }
 
+//search API finish
+
+//category API
+
 type CatResp []struct {
 	Main struct {
 		DisplayName        string      `json:"display_name"`
@@ -203,51 +208,10 @@ type CatResp []struct {
 		} `json:"sub_sub"`
 	} `json:"sub"`
 }
-type ItemDetail struct {
-	Itemid           int64  `json:"itemid"`
-	Name             string `json:"name"`
-	Brand            string `json:"brand"`
-	ItemStatus       string `json:"item_status"`
-	IsSlashPriceItem bool   `json:"is_slash_price_item"`
-	Condition        int    `json:"condition"`
-	Categories       []struct {
-		DisplayName string `json:"display_name"`
-		Catid       int    `json:"catid"`
-	} `json:"categories"`
-	Images                 []string `json:"images"`
-	Description            string   `json:"description"`
-	NormalStock            int      `json:"normal_stock"`
-	Stock                  int      `json:"stock"`
-	Price                  float64  `json:"price"`
-	PriceMinBeforeDiscount float64  `json:"price_min_before_discount"`
-	PriceBeforeDiscount    float64  `json:"price_before_discount"`
-	PriceMax               float64  `json:"price_max"`
-	PriceMin               float64  `json:"price_min"`
-	Discount               string   `json:"discount"`
-	RawDiscount            int      `json:"raw_discount"`
-	HistoricalSold         int      `json:"historical_sold"`
-	Sold                   int      `json:"sold"`
-	ItemRating             struct {
-		RatingStar        float64 `json:"rating_star"`
-		RatingCount       []int   `json:"rating_count"`
-		RcountWithImage   int     `json:"rcount_with_image"`
-		RcountWithContext int     `json:"rcount_with_context"`
-	} `json:"item_rating"`
-	LikedCount     int    `json:"liked_count"`
-	CmtCount       int    `json:"cmt_count"`
-	ViewCount      int    `json:"view_count"`
-	Shopid         int    `json:"shopid"`
-	IsOfficialShop bool   `json:"is_official_shop"`
-	ShopLocation   string `json:"shop_location"`
-}
-type Detail struct {
-	Item     ItemDetail  `json:"item"`
-	Version  string      `json:"version"`
-	Data     interface{} `json:"data"`
-	ErrorMsg interface{} `json:"error_msg"`
-	Error    interface{} `json:"error"`
-}
 
+//category API finish
+
+//rating API
 type RatingResponse struct {
 	Data struct {
 		Ratings           []RatingDetail `json:"ratings"`
@@ -288,6 +252,9 @@ type RatingDetail struct {
 	LikeCount interface{} `json:"like_count"`
 }
 
+//rating API finish
+
+//shop info API
 type ShopInfo struct {
 	Error    int      `json:"error"`
 	ErrorMsg string   `json:"error_msg"`
@@ -296,9 +263,10 @@ type ShopInfo struct {
 }
 
 type ShopData struct {
-	Userid        int    `json:"userid"`
-	Shopid        int    `json:"shopid"`
+	UserID        int    `json:"userid"`
+	ShopID        int    `json:"shopid"`
 	Name          string `json:"name"`
+	ShopLocation  string `json:"shop_location"`
 	ItemCount     int    `json:"item_count"`
 	FollowerCount int    `json:"follower_count"`
 	Account       struct {
@@ -307,26 +275,50 @@ type ShopData struct {
 		Portrait       string `json:"portrait"`
 		PhoneVerified  bool   `json:"phone_verified"`
 		EmailVerified  bool   `json:"email_verified"`
-		Status         int    `json:"status"`
 	} `json:"account"`
-	Address struct {
-		ID              int    `json:"id"`
-		Userid          int    `json:"userid"`
-		Name            string `json:"name"`
-		Phone           string `json:"phone"`
-		Region          string `json:"region"`
-		State           string `json:"state"`
-		City            string `json:"city"`
-		Address         string `json:"address"`
-		Status          int    `json:"status"`
-		Ctime           int    `json:"ctime"`
-		Mtime           int    `json:"mtime"`
-		Zipcode         string `json:"zipcode"`
-		Deftime         int    `json:"deftime"`
-		FullAddress     string `json:"full_address"`
-		District        string `json:"district"`
-		Town            string `json:"town"`
-		LogisticsStatus int    `json:"logistics_status"`
-		Icno            string `json:"icno"`
-	} `json:"address"`
+
+	Ctime          int64 `json:"ctime"`
+	LastActiveTime int64 `json:"last_active_time"`
 }
+
+//shop info API finish
+
+//pdp v4
+type ItemDataV4 struct {
+	ItemID              int64       `json:"itemid"`
+	ShopID              int         `json:"shopid"`
+	UserID              int         `json:"userid"`
+	PriceBeforeDiscount int64       `json:"price_before_discount"`
+	Price               int         `json:"price"`
+	Stock               int         `json:"stock"`
+	Discount            string      `json:"discount"`
+	HistoricalSold      int         `json:"historical_sold"`
+	Sold                int         `json:"sold"`
+	Name                string      `json:"name"`
+	Ctime               int         `json:"ctime"`
+	Condition           int         `json:"condition"`
+	Catid               int         `json:"catid"`
+	Description         string      `json:"description"`
+	Brand               interface{} `json:"brand"`
+	ItemRating          struct {
+		RatingStar  float64 `json:"rating_star"`
+		RatingCount []int   `json:"rating_count"`
+	} `json:"item_rating"`
+	LikedCount     int      `json:"liked_count"`
+	Images         []string `json:"images"`
+	Image          string   `json:"image"`
+	IsOfficialShop bool     `json:"is_official_shop"`
+	ShopLocation   string   `json:"shop_location"`
+	Categories     []struct {
+		Catid           int    `json:"catid"`
+		DisplayName     string `json:"display_name"`
+		NoSub           bool   `json:"no_sub"`
+		IsDefaultSubcat bool   `json:"is_default_subcat"`
+	} `json:"categories"`
+}
+
+type RespDetailV4 struct {
+	Data ItemDataV4 `json:"data"`
+}
+
+//pdp v4 finish

@@ -204,7 +204,7 @@ func PrepareCategoryClient() (resp []Category) {
 	return
 }
 
-func getDetail(itemID, shopID string) (resp Detail, err error) {
+func getDetail(itemID, shopID string) (resp RespDetailV4, err error) {
 	resp, err = hitDetailAPI(itemID, shopID)
 	return
 }

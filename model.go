@@ -41,38 +41,35 @@ type AggCronResult struct {
 	TotalDays    int
 }
 
-type UserReview struct {
-	Detail     UserDetail `json:"detail"`
-	OrderID    int64      `json:"order_id"`
-	ShopID     int        `json:"shop_id"`
-	ItemID     int64      `json:"item_id"`
-	RatingStar int        `json:"rating_star"`
-	Comment    string     `json:"comment"`
-}
-
-type UserDetail struct {
-	ShopID        int    `json:"shop_id"`
-	Username      string `json:"username"`
-	Name          string `json:"name"`
-	Phone         string `json:"phone"`
-	Address       string `json:"address"`
-	City          string `json:"city"`
-	District      string `json:"district"`
-	Follower      int    `json:"follower"`
-	Portrait      string `json:"portrait"`
-	PhoneVerified bool   `json:"phone_verified"`
-}
-
 type GetReviews struct {
 	ProductID string
 	ShopID    string
+	Offset    int
 
-	Review  []RatingDetail
+	Reviews []RatingDetail
 	Latency string
 	Err     error
 }
 
-type GetUserWorkerReturn struct {
-	RatingDetail RatingDetail
-	ShopData     ShopData
+type GetUser struct {
+	UserShopID  string
+	ReviewCtime int64
+
+	UserData ShopData
+	Latency  string
+	Err      error
+}
+
+type Buyer struct {
+	UserShopID     int64  `json:"user_shop_id"`
+	Username       string `json:"username"`
+	Name           string `json:"name"`
+	Location       string `json:"location"`
+	FollowingCount int    `json:"following_count"`
+	Portrait       string `json:"portrait"`
+
+	BuyingTimeFormatted     string `json:"buying_time"`
+	UserCreateTimeFormatted string `json:"user_create_time"`
+
+	AccountAge int `json:"account_age"`
 }

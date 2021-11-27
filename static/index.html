@@ -221,7 +221,7 @@
             'contentType': 'application/json'
         }).done(function(data) {
             Swal.close()
-            item = data.Data.item
+            item = data.Data.data
             histDet = processDetail(dataRow, dates, item)
             row.child(histDet).show()
         })
@@ -249,21 +249,36 @@
             imgURL = `https://cf.shopee.co.id/file/${imgCode}_tn`
             imgTag = `<img style="border: 2px solid #666666;" width="10%" width="auto"  class="img img-responsive" src=${imgURL}> &nbsp;&nbsp;`
             images += imgTag
+        }
 
+        categoryLabel = []
+        categoryTree = item.categories
+        for (let index = 0; index < categoryTree.length; index++) {
+            cat = categoryTree[index];
+            categoryLabel.push(cat.display_name)
+        }
+        let categoryInfo = categoryLabel.join(" > ");
+
+        brandName = "N/A"
+        if (item.brand != null) {
+            brandName = item.brand
         }
 
         infoSection = `
             <div class="pb-3">${images}</div>
-            <b class="pb-3">${d.name}</b>
+            <small style="color: #448888"><i>${categoryInfo}</i></small><br>
+            <b style="font-size: 18px;" class="pb-3">${d.name}</b>
             <p class="text-muted">${item.description.substring(0, 300)}...</p>
             <br>
             <small>
+                <i class="fa fa-user-circle"></i> &nbsp;${brandName} &nbsp;&nbsp;
                 <i class="fa fa-map-marker"></i> &nbsp;${item.shop_location} &nbsp;&nbsp;
-                <i style="color:green" class="fa fa-eye"></i> &nbsp;${item.view_count} &nbsp;&nbsp;
-                <i style="color:orange" class="fa fa-star"></i> &nbsp;${item.item_rating.rating_count[0]} &nbsp;&nbsp;
-                <i style="color:red" class="fa fa-heart"></i> &nbsp;${item.liked_count} &nbsp;&nbsp;
-                <i style="color:blue" class="fa fa-dropbox"></i> &nbsp;${item.stock} &nbsp;&nbsp;
-            </small>
+                <i style="color:orange" class="fa fa-star"></i> &nbsp;${formatNumber(item.item_rating.rating_count[0])} &nbsp;&nbsp;
+                <i style="color:red" class="fa fa-heart"></i> &nbsp;${formatNumber(item.liked_count)} &nbsp;&nbsp;
+                <i style="color:blue" class="fa fa-dropbox"></i> &nbsp;${formatNumber(item.stock)} &nbsp;&nbsp;
+            </small><br>
+            
+            
             
             <a style="float: right" href="${getUrl(d)}" target="_blank" class="btn btn-sm btn-outline-dark">
                 <i  class="fa fa-search"></i>
@@ -309,7 +324,10 @@
                     <td>${deltaSold}</td>
                 </tr>
             `
-                contents = contents + tableHtml
+                if (d.prices.length - index <= 30) {
+                    contents = contents + tableHtml
+                }
+
             }
         }
 
@@ -332,5 +350,9 @@
         let backendHost = "http://188.166.252.251:6001"
         file = document.getElementById("cats").value;
         window.open(backendHost + "/download?path=aggregated-" + file + ".csv", '_blank')
+    }
+
+    function formatNumber(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
 </script>
