@@ -71,7 +71,7 @@
     }
 
     function prepareCategory() {
-        let backendHost = "http://188.166.252.251:6001"
+        let backendHost = "http://localhost:6001"
         $.ajax({
             'url': backendHost + "/getCategory",
             'method': "GET",
@@ -126,7 +126,7 @@
     }
 
     function getData(catID) {
-        let backendHost = "http://188.166.252.251:6001"
+        let backendHost = "http://localhost:6001"
         Swal.fire({
             title: 'Please Wait',
             text: 'fetching aggregated data...',
@@ -207,7 +207,7 @@
     }
 
     function getDetail(row, dataRow, dates) {
-        let backendHost = "http://188.166.252.251:6001"
+        let backendHost = "http://localhost:6001"
         Swal.fire({
             title: 'Please Wait',
             text: 'fetching product details...',
@@ -234,6 +234,10 @@
         nameStriped = nameStriped.split(" ").join("-")
         nameStriped = "https://shopee.co.id/" + nameStriped
         return nameStriped
+    }
+
+    function routeBuyer(d) {
+        return "http://localhost:6001/static/buyer.html?itemid=" + d.item_id + "&shopid=" + d.shop_id
     }
 
     function processDetail(d, dates, item) {
@@ -266,24 +270,32 @@
 
         infoSection = `
             <div class="pb-3">${images}</div>
-            <small style="color: #448888"><i>${categoryInfo}</i></small><br>
-            <b style="font-size: 18px;" class="pb-3">${d.name}</b>
+            <small><i>${categoryInfo}</i></small><br>
+            <a href="${getUrl(d)}" target="_blank" style="font-size: 18px;" class="pb-3"><b>${d.name}</b></a>
             <p class="text-muted">${item.description.substring(0, 300)}...</p>
             <br>
-            <small>
-                <i class="fa fa-user-circle"></i> &nbsp;${brandName} &nbsp;&nbsp;
-                <i class="fa fa-map-marker"></i> &nbsp;${item.shop_location} &nbsp;&nbsp;
-                <i style="color:orange" class="fa fa-star"></i> &nbsp;${formatNumber(item.item_rating.rating_count[0])} &nbsp;&nbsp;
-                <i style="color:red" class="fa fa-heart"></i> &nbsp;${formatNumber(item.liked_count)} &nbsp;&nbsp;
-                <i style="color:blue" class="fa fa-dropbox"></i> &nbsp;${formatNumber(item.stock)} &nbsp;&nbsp;
-            </small><br>
-            
-            
-            
-            <a style="float: right" href="${getUrl(d)}" target="_blank" class="btn btn-sm btn-outline-dark">
-                <i  class="fa fa-search"></i>
-            </a>
+            <div class="row">
+                <div class="col-lg-8">
+                    <small>
+                        <i class="fa fa-user-circle"></i> &nbsp;${brandName} &nbsp;&nbsp;
+                        <i style="color:green"class="fa fa-map-marker"></i> &nbsp;${item.shop_location} &nbsp;&nbsp;
+                        <i style="color:orange" class="fa fa-star"></i> &nbsp;${formatNumber(item.item_rating.rating_count[0])} &nbsp;&nbsp;
+                        <i style="color:red" class="fa fa-heart"></i> &nbsp;${formatNumber(item.liked_count)} &nbsp;&nbsp;
+                        <i style="color:blue" class="fa fa-dropbox"></i> &nbsp;${formatNumber(item.stock)} &nbsp;&nbsp;
+                    </small>
+                </div>
+                <div class="col-lg-3">
+                    <a style="float: right" href="${routeBuyer(d)}" class="btn btn-sm btn-info">
+                        <i style="color:white" class="fa fa-user"></i> <span style="color:white">Buyer Insight</span>
+                    </a>
+
+                </div>
+            </div>
+           
         `
+
+
+
         divTableHead = `
             </div>
             <div class="col-lg-4">
@@ -334,8 +346,6 @@
         containerEnd = ' </tbody> </table></div> </div>'
         return containerHead + infoSection + divTableHead + contents + containerEnd
 
-
-
     }
 
     function refresh() {
@@ -347,7 +357,7 @@
     }
 
     function download() {
-        let backendHost = "http://188.166.252.251:6001"
+        let backendHost = "http://localhost:6001"
         file = document.getElementById("cats").value;
         window.open(backendHost + "/download?path=aggregated-" + file + ".csv", '_blank')
     }
