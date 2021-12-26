@@ -33,6 +33,30 @@ func fetchResult(w http.ResponseWriter, req *http.Request) {
 	json.NewEncoder(w).Encode(data)
 }
 
+func fetchResultSingle(w http.ResponseWriter, req *http.Request) {
+	t := time.Now()
+	msg := "fetch result single"
+	code := http.StatusOK
+	catid := req.FormValue("catid")
+	itemid := req.FormValue("itemid")
+	result, err := FetchResultSingle(catid, itemid)
+	if err != nil {
+		msg = err.Error()
+		code = http.StatusInternalServerError
+	}
+
+	data := BasicResp{
+		Msg:     msg,
+		Latency: time.Since(t).String(),
+		Data:    result,
+	}
+
+	log.Println(msg)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	json.NewEncoder(w).Encode(data)
+}
+
 func prepCat(w http.ResponseWriter, req *http.Request) {
 	t := time.Now()
 	msg := "fetch cat"

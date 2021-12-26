@@ -8,6 +8,7 @@
     <link href="https://cdn.datatables.net/1.10.25/css/dataTables.bulma.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.1/css/bulma.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="shortcut icon" href="images/fav.png" />
 </head>
 
 
@@ -71,7 +72,7 @@
     }
 
     function prepareCategory() {
-        let backendHost = "http://localhost:6001"
+        let backendHost = "http://188.166.252.251:6001"
         $.ajax({
             'url': backendHost + "/getCategory",
             'method': "GET",
@@ -126,7 +127,7 @@
     }
 
     function getData(catID) {
-        let backendHost = "http://localhost:6001"
+        let backendHost = "http://188.166.252.251:6001"
         Swal.fire({
             title: 'Please Wait',
             text: 'fetching aggregated data...',
@@ -207,7 +208,7 @@
     }
 
     function getDetail(row, dataRow, dates) {
-        let backendHost = "http://localhost:6001"
+        let backendHost = "http://188.166.252.251:6001"
         Swal.fire({
             title: 'Please Wait',
             text: 'fetching product details...',
@@ -237,7 +238,7 @@
     }
 
     function routeBuyer(d) {
-        return "http://localhost:6001/static/buyer.html?itemid=" + d.item_id + "&shopid=" + d.shop_id
+        return "http://188.166.252.251:6001/static/insight.html?itemid=" + d.item_id + "&shopid=" + d.shop_id + "&catid=" + d.cat_id
     }
 
     function processDetail(d, dates, item) {
@@ -293,8 +294,6 @@
             </div>
            
         `
-
-
 
         divTableHead = `
             </div>
@@ -357,7 +356,7 @@
     }
 
     function download() {
-        let backendHost = "http://localhost:6001"
+        let backendHost = "http://188.166.252.251:6001"
         file = document.getElementById("cats").value;
         window.open(backendHost + "/download?path=aggregated-" + file + ".csv", '_blank')
     }

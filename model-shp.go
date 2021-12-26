@@ -291,6 +291,8 @@ type ItemDataV4 struct {
 	PriceBeforeDiscount int64       `json:"price_before_discount"`
 	Price               int         `json:"price"`
 	Stock               int         `json:"stock"`
+	DiscountStock       int         `json:"discount_stock"`
+	NormalStock         int         `json:"normal_stock"`
 	Discount            string      `json:"discount"`
 	HistoricalSold      int         `json:"historical_sold"`
 	Sold                int         `json:"sold"`

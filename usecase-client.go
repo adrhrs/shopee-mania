@@ -208,3 +208,22 @@ func getDetail(itemID, shopID string) (resp RespDetailV4, err error) {
 	resp, err = hitDetailAPI(itemID, shopID)
 	return
 }
+
+func FetchResultSingle(catID, itemID string) (results FetchProductResponse, err error) {
+	catResult, err := FetchResult(catID)
+	if err != nil {
+		return
+	}
+
+	for _, cp := range catResult.Product {
+		strItemID := strconv.FormatInt(cp.Itemid, 10)
+		if strItemID == itemID {
+			results.Product = append(results.Product, cp)
+			results.Total++
+			break
+		}
+	}
+
+	results.Dates = catResult.Dates
+	return
+}

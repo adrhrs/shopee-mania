@@ -15,7 +15,7 @@ const (
 	layout            = "2006-01-02 15:04:05"
 )
 
-func TrackProduct(itemID, shopID string) (reviewCount, userCount int, data []Buyer, err error) {
+func TrackProduct(itemID, shopID string) (reviewCount, userCount int, data []Buyer, trackTime string, err error) {
 
 	filename := generateFilename(itemID, shopID)
 	_, err = os.Stat(filename)
@@ -24,14 +24,14 @@ func TrackProduct(itemID, shopID string) (reviewCount, userCount int, data []Buy
 		if err != nil {
 			return
 		}
-		data, err = fetchBuyerInfo(filename)
+		data, trackTime, err = fetchBuyerInfo(filename)
 		if err != nil {
 			return
 		}
 	} else if err != nil {
 		log.Println(err)
 	} else {
-		data, err = fetchBuyerInfo(filename)
+		data, trackTime, err = fetchBuyerInfo(filename)
 		if err != nil {
 			return
 		}
@@ -40,7 +40,7 @@ func TrackProduct(itemID, shopID string) (reviewCount, userCount int, data []Buy
 	return
 }
 
-func fetchBuyerInfo(filename string) (data []Buyer, err error) {
+func fetchBuyerInfo(filename string) (data []Buyer, trackTime string, err error) {
 	file, err := os.Open(filename)
 	if err != nil {
 		log.Println(err)
@@ -97,6 +97,14 @@ func fetchBuyerInfo(filename string) (data []Buyer, err error) {
 			AccountAge:              accAge,
 		})
 	}
+
+	fi, err := file.Stat()
+	if err != nil {
+		return
+	}
+
+	trackTime = fi.ModTime().Format(dateFormat)
+
 	file.Close()
 	return
 }

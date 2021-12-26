@@ -22,6 +22,7 @@ func main() {
 	//FE related
 	http.HandleFunc("/getCategory", prepCat)
 	http.HandleFunc("/fetch", fetchResult)
+	http.HandleFunc("/fetch-single", fetchResultSingle)
 	http.HandleFunc("/download", handleDownload)
 	http.HandleFunc("/detail", handleDetail)
 	http.HandleFunc("/track", handleTrackProduct)

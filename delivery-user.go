@@ -14,16 +14,24 @@ func handleTrackProduct(w http.ResponseWriter, req *http.Request) {
 
 	itemID := req.FormValue("itemid")
 	shopID := req.FormValue("shopid")
-	_, _, dataBuyer, err := TrackProduct(itemID, shopID)
+	_, _, dataBuyer, trackTime, err := TrackProduct(itemID, shopID)
 	if err != nil {
 		msg = err.Error()
 		code = http.StatusInternalServerError
 	}
 
+	type Resp struct {
+		TrackTime string
+		Buyer     []Buyer
+	}
+
 	data := BasicResp{
 		Msg:     msg,
 		Latency: time.Since(t).String(),
-		Data:    dataBuyer,
+		Data: Resp{
+			TrackTime: trackTime,
+			Buyer:     dataBuyer,
+		},
 	}
 
 	log.Println("got track product buyer request")
